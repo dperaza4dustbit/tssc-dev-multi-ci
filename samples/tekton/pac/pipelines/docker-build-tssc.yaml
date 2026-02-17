@@ -37,6 +37,10 @@ spec:
     - default: rox-api-token
       name: stackrox-secret
       type: string
+    - default: tas-secret
+      name: tas-secret-name
+      description: 'Trusted Artifact Signer secret name'
+      type: string
     - default: gitops-auth-secret
       description: 'Secret name to enable this pipeline to update the gitops repo with the new image. '
       name: gitops-auth-secret-name
@@ -96,6 +100,8 @@ spec:
       params:
         - name: rox-secret-name
           value: $(params.stackrox-secret)
+        - name: tas-secret-name
+          value: $(params.tas-secret-name)
         - name: gitops-secret-name
           value: $(params.gitops-auth-secret-name)
         - name: cosign-public-secret-name

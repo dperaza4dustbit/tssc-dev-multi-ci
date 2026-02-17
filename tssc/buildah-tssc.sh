@@ -68,7 +68,12 @@ function generate-sboms() {
 
 function upload-sbom() {
     echo "Running $TASK_NAME:upload-sbom"
-    cosign attach sbom --sbom $TEMP_DIR/files/sbom-cyclonedx.json --type cyclonedx "$IMAGE"
+    cosign initialize --mirror "${TUF_MIRROR}" --root "${TUF_MIRROR}/root.json"
+    cosign attest --yes \
+    --predicate $TEMP_DIR/files/sbom-cyclonedx.json \
+    --type cyclonedx \
+    --rekor-url "$REKOR_HOST"
+    "$SBOM_BLOB_URL"
 }
 function delim() {
     printf '=%.0s' {1..8}
@@ -89,6 +94,8 @@ if [ $ERR != 0 ]; then
     echo "Failed in step merge_sboms.py"
     exit $ERR
 fi
+
+SBOM_BLOB_URL=$(cat $RESULTS/SBOM_BLOB_URL)
 
 delim
 upload-sbom

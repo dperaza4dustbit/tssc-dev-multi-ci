@@ -41,8 +41,8 @@ with open("./results/temp/files/sbom-cyclonedx.json", "w") as f:
 
 ### write the SBOM blob URL result ###
 
-with open("./results/temp/files/sbom-cyclonedx.json", "rb") as f:
-  sbom_digest = hashlib.file_digest(f, "sha256").hexdigest()
+with open("./results/temp/files/image-digest", "r") as f:
+  image_digest = f.read().strip()
 
 # https://github.com/opencontainers/distribution-spec/blob/main/spec.md?plain=1#L160
 tag_regex = "[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}"
@@ -51,7 +51,7 @@ tag_regex = "[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}"
 # this avoids conflict with port numbers
 image_without_tag = re.sub(f":{tag_regex}$", "", os.getenv("IMAGE"))
 
-sbom_blob_url = f"{image_without_tag}@sha256:{sbom_digest}"
+sbom_blob_url = f"{image_without_tag}@{image_digest}"
 
 with open(os.getenv("RESULT_PATH"), "w") as f:
   f.write(sbom_blob_url)

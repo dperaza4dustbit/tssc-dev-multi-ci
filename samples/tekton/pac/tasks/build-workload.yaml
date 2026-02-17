@@ -98,9 +98,19 @@ spec:
           secretKeyRef:
             name: $(params.cosign-public-secret-name)
             key: cosign.pub
+      - name: REKOR_HOST
+        valueFrom:
+          secretKeyRef:
+            name: $(params.tas-secret-name)
+            key: rekor_url
+      - name: TUF_MIRROR
+        valueFrom:
+          secretKeyRef:
+            name: $(params.tas-secret-name)
+            key: tuf_url
   steps:
     - name: init
-      image: quay.io/redhat-appstudio/rhtap-task-runner:latest
+      image: quay.io/tsscdavp/rhtap-task-runner:custom
       args:
         - $(params.BUILD_ARGS[*])
       script: |
@@ -112,6 +122,7 @@ spec:
         echo "running init"
         pwd
         ls -la
+        env
         /workspace/source/tssc/init.sh
       securityContext:
         capabilities:
@@ -125,7 +136,7 @@ spec:
           name: tmpfiles
       imagePullPolicy: Always
     - name: build
-      image: quay.io/redhat-appstudio/rhtap-task-runner:latest
+      image: quay.io/tsscdavp/rhtap-task-runner:custom
       args:
         - $(params.BUILD_ARGS[*])
       script: |
